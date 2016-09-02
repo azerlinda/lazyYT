@@ -97,14 +97,18 @@
           .on('click', function (e) {
             e.preventDefault();
             if (!$el.hasClass('lazyYT-video-loaded') && $thumb.hasClass('lazyYT-image-loaded')) {
-              $el.html('<iframe src="//www.youtube.com/embed/' + id + '?autoplay=1&' + youtube_parameters + '" frameborder="0" allowfullscreen></iframe>')
+              $el.html('<iframe src="https://www.youtube.com/embed/' + id + '?autoplay=1&' + youtube_parameters + '" frameborder="0" allowfullscreen></iframe>')
                 .addClass('lazyYT-video-loaded');
+
+                if(typeof settings.onclick == 'function'){
+                    settings.onclick.call(this);
+                } 
             }
           });
 
-        $.getJSON('//gdata.youtube.com/feeds/api/videos/' + id + '?v=2&alt=json', function (data) {
+        /*$.getJSON('//gdata.youtube.com/feeds/api/videos/' + id + '?v=2&alt=json', function (data) {
             $el.find('#lazyYT-title-' + id).text(data.entry.title.$t);
-        });
+        });*/
 
     }
 
@@ -113,13 +117,18 @@
         loading_text: 'Loading...',
         default_ratio: '16:9',
         callback: null, // ToDO execute callback if given
-        container_class: 'lazyYT-container'
+        container_class: 'lazyYT-container',
+        onclick: null, // callback after video loads
       };
       var settings = $.extend(defaultSettings, newSettings);
       
       return this.each(function () {
           var $el = $(this).addClass(settings.container_class);
           setUp($el, settings);
+
+          if(typeof settings.callback == 'function'){
+              settings.callback.call(this);
+          } 
       });
     };
 
